@@ -2,7 +2,7 @@
 
 Simple doctor/patient appointment booking application, backend code written in python, and django framework (mostly custom class based views), frontend made with free boostrap templates, elements and css. Charts made with chart.js
 
-Application reason: only for educational purposes, pratice django python and bootstrap. 
+Application reason: only for educational purposes, practice django python and bootstrap. 
 
 Application able to do the following:
 Separate registration, profile, dashboard features for Doctors, and Patients, and for site administrators. Time slot booking system, and simple communication between users.
