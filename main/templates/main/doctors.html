@@ -1,0 +1,137 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<h3 class="mt-4 py-5"><i class="fa-solid fa-user-doctor fa-lg"></i> doctors ({{count}})</h3>
+
+<table class="table shadow-custom">
+  <thead>
+    <tr>
+      <th scope="col" class="text-center">Rating</th>
+      <th scope="col"></th>
+      <th scope="col">Name</th>
+      <th scope="col">Expertise</th>
+      <th scope="col">Hospital</th>
+     {% if request.user.is_staff%}<th scope="col"></th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+   {% for doctor in doctors%}
+    <tr>
+      <th scope="row">
+      {% if doctor.averagerate %}
+                
+                <div class="my-4 mb-4 d-flex justify-content-center small {% if doctor.averagerate < 3 %} text-danger {% elif doctor.averagerate < 4 %}text-warning {% elif doctor.averagerate < 5 %} 
+                    text-info {% else %} text-success  {% endif %} mb-2">
+                    <span>
+                        <i class="{% if doctor.averagerate < 0.5%}fa-regular fa-star{% elif doctor.averagerate >= 0.5 and doctor.averagerate < 1 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 1.5%}fa-regular fa-star{% elif doctor.averagerate >= 1.5 and doctor.averagerate < 2 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 2.5%}fa-regular fa-star{% elif doctor.averagerate >= 2.5 and doctor.averagerate < 3 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 3.5%}fa-regular fa-star{% elif doctor.averagerate >= 3.5 and doctor.averagerate < 4 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 4.5%}fa-regular fa-star{% elif doctor.averagerate >= 4.5 and doctor.averagerate < 5 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <small>({{doctor.countrate}})</small>
+                    </span>
+                </div>
+              {% else %}
+              <div class="my-4 d-flex justify-content-center small">
+                <small><i> Not rated </i><a href="">({{doctor.countrate}})</a></small>
+              </div>
+              {% endif %}    
+      </th>
+
+
+      <th scope="row">
+        <a href="{% url 'show_doctor_profile' doctor.pk %}">
+        <img  class="avatar avatar-xl ms-5 mt-2 border border-4 border-dark" src="{{doctor.imageURL}}" />
+      
+        </a>
+        {% if request.user.is_staff %}  
+          {% if not doctor.user.is_active %}
+          <small class="text-danger ms-2"><i class="fa-solid fa-ban fa-lg"></i></small>
+          {% endif %}
+        {% endif %}
+      </th>
+      <td>Dr. {{doctor.user.first_name}} {{doctor.user.last_name}} </td>
+      <td>
+      {% for expertise in doctor.expertise.all %}
+      {{expertise}},
+      {% endfor %}
+      </td>
+      <td>
+      {{doctor.hospital}}
+      </br><small>({{doctor.hospital.city}} {{doctor.hospital.address}})</small>
+      </td>
+      {% if request.user.is_staff %}
+      <td>
+      {% if doctor.user.is_active %}
+      <button data-bs-toggle="modal" data-bs-target="#suspendModal-{{doctor.user.pk}}" type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-ban"></i> Suspend</button>
+      {% else %}
+      <button data-bs-toggle="modal" data-bs-target="#suspendModal-{{doctor.user.pk}}" type="button" class="btn btn-success btn-sm"><i class="fa-solid fa-square-check"></i> Activate</button>
+      {% endif %}
+      </td>
+      {% endif %}
+    </tr>
+
+
+      <!-- Modal -->
+        <div class="modal fade" id="suspendModal-{{doctor.user.pk}}" tabindex="-1" aria-labelledby="suspendModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="suspendModalLabel">{% if doctor.user.is_active %}Do you want to suspend this user?{% else %}Do you want to enable this user?{% endif %}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{doctor.user.first_name}} {{doctor.user.last_name}}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <form method="POST" action="{% url 'manage_user' doctor.user.pk  %}">
+                {% csrf_token %}
+                {% if doctor.user.is_active %}
+                <button type="submit" class="btn btn-danger btn-sm">Suspend</button>
+                {% else %}
+                <button type="submit" class="btn btn-success btn-sm">Enable</button>
+                {% endif %}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+                      {% if doctors.has_other_pages %}
+                          <nav aria-label="Page navigation example">
+                              <ul class="pagination pagination-sm mt-6 ms-8">
+                                  {% if doctors.has_previous %}
+                                  <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{doctors.previous_page_number}}">Previous</a></li>
+                                  {% endif%}
+                                  {% for page  in doctors.paginator.page_range %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                  {% endfor %}
+                                  {% if doctors.has_next %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{doctors.next_page_number}}">Next</a></li>
+                                  {% endif %}
+                              </ul>
+                          </nav>
+                      {% endif %}
+
+
+    <div class="control-group my-2 ms-0">
+      <!-- Button -->
+      <div class="controls">
+        <a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Go Back</a> 
+      </div>
+    </div>
+
+</div>
+</div>
+{% endblock content %}

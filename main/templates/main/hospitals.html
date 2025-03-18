@@ -1,0 +1,83 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<h3 class="mt-4 py-5"><i class="fa-solid fa-hospital fa-lg"></i> Hospitals ({{count}})</h3>
+
+<table class="table shadow-custom">
+  <thead>
+    <tr>
+      <th scope="col" class="text-center">Rating</th>
+      <th scope="col"></th>
+      <th scope="col">Name</th>
+      <th scope="col">City</th>
+      <th scope="col">Phone</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+ 
+   {% for hospital in hospitals%}
+    <tr>
+
+      <th scope="row">
+
+      {% if hospital.averagerate %}
+                
+                <div class="my-4 d-flex justify-content-center small {% if hospital.averagerate < 3 %} text-danger {% elif hospital.averagerate < 4 %}text-warning {% elif hospital.averagerate < 5 %} 
+                    text-info {% else %} text-success  {% endif %} mb-2">
+                    <span>
+                        <i class="{% if hospital.averagerate < 0.5%}fa-regular fa-star{% elif hospital.averagerate >= 0.5 and hospital.averagerate < 1 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 1.5%}fa-regular fa-star{% elif hospital.averagerate >= 1.5 and hospital.averagerate < 2 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 2.5%}fa-regular fa-star{% elif hospital.averagerate >= 2.5 and hospital.averagerate < 3 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 3.5%}fa-regular fa-star{% elif hospital.averagerate >= 3.5 and hospital.averagerate < 4 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 4.5%}fa-regular fa-star{% elif hospital.averagerate >= 4.5 and hospital.averagerate < 5 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <small>({{hospital.countrate}})</small>
+                    </span>
+                </div>
+
+              {% else %}
+              <div class="my-4 d-flex justify-content-center small">
+                <small><i> Not rated </i><a href="">({{hospital.countrate}})</a></small>
+              </div>
+              {% endif %}
+
+      </th>
+
+      <th scope="row">
+        <a href="{% url 'hospital_detail' hospital.pk %}"><img  class="ms-5 mt-2 border border-4 border-dark" src="{{hospital.imageURL}}" style="height:150px;width:200px;"/></a>
+      </th>
+      <td>{{hospital.name}} </td>
+      <td>{{hospital.city}}</td>
+      <td>{{hospital.phone}}</td>
+      <td data-toggle="tooltip" data-placement="bottom" data-bs-html="true" title="{{hospital.description|safe}}">{{hospital.description|truncatechars:70|safe}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+                      {% if hospitals.has_other_pages %}
+                          <nav aria-label="Page navigation example">
+                              <ul class="pagination pagination-sm mt-6 ms-8">
+                                  {% if hospitals.has_previous %}
+                                  <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{hospitals.previous_page_number}}">Previous</a></li>
+                                  {% endif%}
+                                  {% for page  in hospitals.paginator.page_range %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                  {% endfor %}
+                                  {% if hospitals.has_next %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{hospitals.next_page_number}}">Next</a></li>
+                                  {% endif %}
+                              </ul>
+                          </nav>
+                      {% endif %}
+
+
+
+
+</div>
+</div>
+{% endblock content %}

@@ -1,0 +1,144 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+
+<div class="container mt-5">
+
+    
+    <div class="row d-flex justify-content-center">
+        
+        <div class="col-md-7">
+            
+            <div class="card p-3 py-1 shadow-custom">
+                
+                <div class="text-center">
+                    <img src="{{doctor.imageURL}}" width="150" height="150" class="rounded-circle">
+                </div>
+                
+                <div class="text-center mt-3">
+                    <span class="bg-secondary p-1 px-4 rounded text-white">PRO</span>
+                    <h5 class="mt-2 mb-0">Dr. {{doctor.user.first_name}} {{doctor.user.last_name}}</h5>
+                    <span>
+                    {% for expertise in  doctor.expertise.all %}
+                    {{expertise.name}},
+                    {% endfor %}
+                    </span>
+                    
+                    <div class="px-4 mt-1" data-toggle="tooltip" data-bs-placement="left" data-bs-html="true"  title="{{doctor.bio|safe}}">
+                        <p class="fonts">{{doctor.bio|truncatechars:200|safe}} </p>                   
+                    </div>
+                   
+                    
+                    
+                </div>
+
+                     <div class="px-4 mt-1 ms-1 py-3">
+                        <i class="fa-solid fa-phone"></i> {{doctor.phone}}
+                        <i class="fa-solid fa-envelope mx-3"></i>{{doctor.user.email}}
+                     </div>
+
+
+                    <div class="px-4 mt-1 ms-1 py-3">      
+                        {% if doctor.hospital %}
+                            <p><i class="fa-solid fa-hospital"></i> <a href={% url 'hospital_detail' doctor.hospital.pk %}>{{doctor.hospital.name}}</a></p>
+                        {% endif %}
+                        <i class="fa-solid fa-phone"></i> <small> {{doctor.hospital.phone}}</br>
+                        <i class="fa-solid fa-address-book"></i> {{doctor.hospital.city}}
+                        {{doctor.hospital.address}}</small></br>
+                       
+                    </div>
+                    
+            <!--star ratio system-->
+
+            {% if request.user.patientprofile %}
+                {% if not ratio %}
+                    
+                    <form method="POST" action = {% url 'send_star_rating' doctor.pk%}>
+                        {% csrf_token %}
+                        <div class="h-100 d-flex align-items-center justify-content-center flex-row-reverse py-3 my-3">
+                            <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+                            <label class="star star-5" for="star-5"></label>
+                            <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+                            <label class="star star-4" for="star-4"></label>
+                            <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+                            <label class="star star-3" for="star-3"></label>
+                            <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+                            <label class="star star-2" for="star-2"></label>
+                            <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+                            <label class="star star-1" for="star-1"></label>
+                            <button class="btn btn-primary btn-sm mx-3" type="submit">ok</button>
+                        </div>                      
+                    </form>
+                {% else %}
+
+                <div class="my-4 py-4 d-flex justify-content-center small {% if doctor.averagerate < 3 %} text-danger {% elif doctor.averagerate < 4 %}text-warning {% elif doctor.averagerate < 5 %} 
+                    text-info {% else %} text-success  {% endif %} mb-2">
+                     <span>
+                        <i class="{% if doctor.averagerate < 0.5%}fa-regular fa-star{% elif doctor.averagerate >= 0.5 and doctor.averagerate < 1 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 1.5%}fa-regular fa-star{% elif doctor.averagerate >= 1.5 and doctor.averagerate < 2 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 2.5%}fa-regular fa-star{% elif doctor.averagerate >= 2.5 and doctor.averagerate < 3 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 3.5%}fa-regular fa-star{% elif doctor.averagerate >= 3.5 and doctor.averagerate < 4 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 4.5%}fa-regular fa-star{% elif doctor.averagerate >= 4.5 and doctor.averagerate < 5 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <small>({{doctor.countrate}})</small>
+                    </span>
+                </div>
+              {% endif %}
+
+            {% else %}
+              {% if doctor.averagerate %}
+                
+                <div class="my-4 mb-4 d-flex justify-content-center small {% if doctor.averagerate < 3 %} text-danger {% elif doctor.averagerate < 4 %}text-warning {% elif doctor.averagerate < 5 %} 
+                    text-info {% else %} text-success  {% endif %} mb-2">
+                    <span>
+                        <i class="{% if doctor.averagerate < 0.5%}fa-regular fa-star{% elif doctor.averagerate >= 0.5 and doctor.averagerate < 1 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 1.5%}fa-regular fa-star{% elif doctor.averagerate >= 1.5 and doctor.averagerate < 2 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 2.5%}fa-regular fa-star{% elif doctor.averagerate >= 2.5 and doctor.averagerate < 3 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 3.5%}fa-regular fa-star{% elif doctor.averagerate >= 3.5 and doctor.averagerate < 4 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if doctor.averagerate < 4.5%}fa-regular fa-star{% elif doctor.averagerate >= 4.5 and doctor.averagerate < 5 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <small>({{doctor.countrate}})</small>
+                    </span>
+                </div>
+
+              {% else %}
+              <div class="my-4 d-flex justify-content-center small">
+                <small><i> Not rated </i><a href="">({{doctor.countrate}})</a></small>
+              </div>
+              {% endif %}
+         
+            {% endif %}
+
+            <!--star ration system-->
+
+
+
+
+                    <div class="buttons text-center my-1">
+
+                        {% if request.user != doctor.user  %}
+                        <a href="{% url 'send_message' doctor.user.pk  %}" class="btn btn-outline-primary px-4">Message</a>
+                        {% endif %}
+
+                        {% if request.user.patientprofile %}
+                        <a href="{% url 'appointment' doctor.pk %}" class="btn btn-primary px-4 ms-3">Appointment</a>
+                        {% endif  %}
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">Go back</a>
+                    </div>
+                
+               
+                
+                
+            </div>
+            
+        </div>
+        
+    </div>
+    
+</div>
+</div>
+</div>
+
+
+{% endblock content %}

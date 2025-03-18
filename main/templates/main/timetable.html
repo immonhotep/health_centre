@@ -1,0 +1,121 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<div class="card shadow-custom my-4">
+  <div class="card-body">
+
+<h3 class="mt-4 py-5"><i class="fa-regular fa-clock fa-lg"></i> Current free time slots ({{count}})</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Applicant</th>
+      <th scope="col">Date</th>
+      <th scope="col">hours</th>
+      <th scope="col">settings</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider table-divider-color">
+    {% for table in timetables%}
+    <tr>
+      <td>
+      {% for applicant in table.appointment_set.all %}
+      <a href="{% url 'patient_profile'  applicant.patient.pk %}">
+      <img data-toggle="tooltip" data-bs-placement="bottom" title="{{applicant.patient.user.first_name}} {{applicant.patient.user.last_name}}"  class="avatar avatar-2lg ms-5 mt-2 border border-4 border-dark" src="{{applicant.patient.imageURL}}" />
+      </a>
+      {% endfor %}
+      </td>
+      <td>{{table.date}}</td>
+      <td>{{table.start_time}}-{{table.end_time}}</td>
+      <td><a href="{% url 'timetable_detail' table.pk %}"  class="btn btn-outline-success btn-sm">Edit</a></td>
+      <td>
+      <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deletemodal-{{table.pk}}">
+      Delete
+      </button>
+      </td>
+      <td>
+      <button class="btn btn-outline-info btn-sm" 
+      data-toggle="tooltip" data-bs-html="true" title="{% for info in table.timetablelog_set.all %}<p>{{info.entry}} ({{info.date}})</p> {% endfor %}" > 
+      View log</button>
+      </td>
+    </tr>
+
+                <!-- Modal -->
+                <div class="modal fade" id="deletemodal-{{table.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="deletemodal-{{table.pk}}">Do you want to delete this time slot?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        {{table}}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Back</button>
+                        <form method="POST" action={% url 'delete_table' table.pk %}>
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+
+                    {% if timetables.has_other_pages %}
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination pagination-sm mt-6 ms-8">
+                                {% if timetables.has_previous %}
+                                <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{timetables.previous_page_number}}">Previous</a></li>
+                                {% endif%}
+                                {% for page  in timetables.paginator.page_range %}
+                                <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                {% endfor %}
+                                {% if timetables.has_next %}
+                                <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{timetables.next_page_number}}">Next</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+
+<div class="card shadow-custom">
+<div class="card-body">
+<form class="form-horizontal" enctype="multipart/form-data" method="POST">
+
+{% csrf_token %}
+
+<h3 class="mt-4 py-5">Add time slot</h3>
+
+  <hr>
+  {{form.as_table}}
+  {{form.media }}
+
+  <div class="control-group my-2">
+      <!-- Button -->
+      <div class="controls">
+        <button class="btn btn-success btn-sm">Add</button>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard'%}">Go Back</a>
+        
+      </div>
+    </div>
+</form>
+</div>
+</div>
+
+</div>
+</div>
+
+
+
+
+
+
+{% endblock content %}

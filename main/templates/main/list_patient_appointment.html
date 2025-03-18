@@ -1,0 +1,96 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+    <div class="container-fluid px-4 py-1">
+
+<h3 class="mt-4 py-5"><i class="fa-solid fa-handshake fa-lg"></i> Your {{title}} appointments ({{count}})</h3>
+<table class="table shadow-custom">
+  <thead>
+    <tr>
+      <th scope="col"></th> 
+      <th scope="col">Doctor's name </th>
+      <th scope="col">Date</th>
+      <th scope="col">Time</th>
+      <th scope="col">Location</th>
+      <th scope="col"></th>
+      <th scope="col">settings</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+  {% for appointment in appointments%}
+    <tr>
+      <td><a href="{% url 'show_doctor_profile' appointment.doctor.pk %}"><img  class="avatar avatar-2lg ms-5 mt-2 border border-4 border-dark" src="{{appointment.doctor.imageURL}}" /></a> </td>  
+      <td>Dr. {{appointment.doctor.user.first_name}} {{appointment.doctor.user.last_name}}</td>
+      <td>{{appointment.timetable.date}}</td>
+      <td>{{appointment.timetable.start_time}} - {{appointment.timetable.end_time}}</td>    
+      <td>{{appointment.doctor.hospital.city}} {{appointment.doctor.hospital.address}}</td>
+      <td>
+      <button class="btn btn-outline-info btn-sm" 
+      data-toggle="tooltip" data-bs-html="true" title="{% for info in appointment.timetable.timetablelog_set.all %}<p>{{info.entry}} ({{info.date}})</p> {% endfor %}" > 
+      View log</button>
+       
+      </td>
+    {% if not appointment.archived %}  <td><button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal-{{appointment.pk}}" >Cancel</button></td>{% else %}<td></td> {% endif%}
+    </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="cancelModal-{{appointment.pk}}" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="cancelModalLabel">Do you want to cancel this appointment ?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Dr. {{appointment.doctor.user.first_name}} {{appointment.doctor.user.last_name}} - {{appointment.timetable.date}} - {{appointment.timetable.start_time}} {{appointment.timetable.end_time}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <form method="POST" action="{% url 'cancel_appointment' appointment.pk   %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Cancel appointment</button>
+                </form>
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+
+
+
+  {% endfor %}
+  </tbody>
+</table>
+
+
+                      {% if appointments.has_other_pages %}
+                          <nav aria-label="Page navigation example">
+                              <ul class="pagination pagination-sm mt-6 ms-8">
+                                  {% if appointments.has_previous %}
+                                  <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{appointments.previous_page_number}}">Previous</a></li>
+                                  {% endif%}
+                                  {% for page  in appointments.paginator.page_range %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                  {% endfor %}
+                                  {% if appointments.has_next %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{appointments.next_page_number}}">Next</a></li>
+                                  {% endif %}
+                              </ul>
+                          </nav>
+                      {% endif %}
+
+
+
+
+</div>
+</div>
+
+
+
+
+
+{% endblock content %}

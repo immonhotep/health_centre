@@ -1,0 +1,275 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+    <div class="container my-5 py-5 w-50">
+        <div class="card shadow-custom">
+            <h3 class="text-center py-2">Send Message to:</h3>
+            <div class="h-100 d-flex align-items-center justify-content-center">
+                {% if receiver.type == "D" %}             
+                <a href=""><img  data-toggle="tooltip" data-bs-placement="bottom" title="{{receiver.first_name}} {{receiver.last_name}}" class="avatar avatar-2lg ms-5 mt-2 border border-4 border-dark" src="{{receiver.doctorprofile.imageURL}}" /></a>
+                {% elif receiver.type == "P" %}
+                <a href=""><img data-toggle="tooltip" data-bs-placement="bottom" title="{{receiver.first_name}} {{receiver.last_name}}" class="avatar avatar-2lg ms-5 mt-2 border border-4 border-dark" src="{{receiver.patientprofile.imageURL}}" /></a>
+                {% else %}
+                <a href=""><img data-toggle="tooltip" data-bs-placement="bottom" title="{{receiver.first_name}} {{receiver.last_name}}"  class="avatar avatar-2lg ms-5 mt-2 border border-4 border-dark" src="{{receiver.adminprofile.imageURL}}" /></a>
+                {% endif %}
+               
+            </div>
+            <div class="card-body">
+                <form class="form-horizontal" enctype="multipart/form-data" method="POST">
+                {% csrf_token %}
+                
+                {{form}}
+                {{form.media}}
+               
+
+                <div class="control-group py-2">
+                    <!-- Button -->
+                    <div class="controls">
+                        <button type="submit" class="btn btn-success btn-sm">Send</button>
+                       <a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Go Back</a>
+                    </div>
+                </div>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+<section class="gradient-custom">
+  <div class="container my-5 py-5">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-12 col-lg-10 col-xl-8">
+        <div class="card">
+          <div class="card-body p-4">
+            <h4 class="text-center mb-4 pb-2">Messages with {{receiver.first_name}} {{receiver.last_name}}</h4>
+
+            <div class="row">
+              <div class="col">
+                {% for message in messages%}
+                <div class="d-flex flex-start py-4">
+                  <img class="rounded-circle shadow-1-strong me-3"
+                    {% if message.sender.type == "D" %}
+                    src="{{message.sender.doctorprofile.imageURL}}" 
+                    {% elif message.sender.type == "P" %}
+                    src="{{message.sender.patientprofile.imageURL}}"
+                    {% else %}
+                    src="{{message.sender.adminprofile.imageURL}}"
+                    {% endif %}
+                    
+                    alt="avatar" width="45"
+                    height="45" />
+                  <div class="flex-grow-1 flex-shrink-1">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-1">
+                          {{message.sender.first_name}} {{message.sender.last_name}} <span class="small">(<small><i>{{message.date}}</i></small>)</span>
+                        </p>
+                                          
+                          <div class="row">
+                            {% if message.sender != request.user %}
+                            <div class="col">   
+                              <a data-bs-toggle="modal" data-bs-target="#messageModal-{{message.pk}}" href="#"><i class="fas fa-reply fa-xs"></i></a>                     
+                            </div>
+                            {% endif %}
+                            {% if message.sender == request.user %}
+                            <div class="col">                           
+                            <a data-bs-toggle="modal" data-bs-target="#deleteModal-{{message.pk}}" href="#"><i class="fas fa-trash fa-xs text-danger"></i></a>
+                            </div>
+                            {% endif %}
+                            {% if message.sender == request.user %}
+                            <div class="col">
+                              <a href={% url 'modify_message' message.pk %}  ><i class="fas fa-wrench fa-xs text-danger"></i></a>        
+                            </div>
+                            {% endif %}
+                          </div>
+                        
+
+                        
+
+                      </div>
+                      <p class="small mb-0">
+                       {{message.body|safe}}
+                      </p>
+                    </div>
+
+                        
+
+                    {% if message.reply_to.count > 0 %}
+
+                    <a href='#' class='replies'>replies ({{message.reply_to.count}})</a>
+
+
+                    <div id="replyDIV" class="got_replies"  >
+
+                    {% for reply in message.reply_to.all %}
+                    <div class="d-flex flex-start mt-4">
+                      <a class="me-3" href="#">
+                        <img class="rounded-circle shadow-1-strong me-3"
+                          {% if reply.sender.type == "D" %}
+                          src="{{reply.sender.doctorprofile.imageURL}}" 
+                          {% elif reply.sender.type == "P" %}
+                          src="{{reply.sender.patientprofile.imageURL}}"
+                          {% else %}
+                          src="{{reply.sender.adminprofile.imageURL}}"
+                          {% endif %}
+                    
+                    alt="avatar" width="45"
+                    height="45" />
+                      </a>
+                      <div class="flex-grow-1 flex-shrink-1">
+                        <div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <p class="mb-1">
+                            {{reply.sender.first_name}} {{reply.sender.last_name}} <span class="small">(<small><i>{{reply.date}}</i></small>)</span>
+                            <div class="row">
+                            {% if reply.sender != request.user %}
+                            <div class="col">   
+                              <a data-bs-toggle="modal" data-bs-target="#messageModal-{{message.pk}}" href="#"><i class="fas fa-reply fa-xs"></i></a>                     
+                            </div>
+                            {% endif %}
+                            {% if reply.sender == request.user %}
+                            <div class="col">                           
+                            <a data-bs-toggle="modal" data-bs-target="#deleteReplyModal-{{reply.pk}}" href="#"><i class="fas fa-trash fa-xs text-danger"></i></a>
+                            </div>
+                            {% endif %}
+                            {% if reply.sender == request.user %}
+                            <div class="col">
+                              <a href="{% url 'modify_reply'  reply.pk %}"><i class="fas fa-wrench fa-xs text-danger"></i></a>        
+                            </div>
+                            {% endif %}
+                          </div>
+                            </p>
+                          </div>
+                          <p class="small mb-0">
+                            {{reply.reply_body|safe}}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="modal fade" id="deleteReplyModal-{{reply.pk}}" tabindex="-1" aria-labelledby="deleteReplyModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="deleteReplyModalLabel">Do you really want to delete this item? </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <div class="modal-body">
+                               From: {{reply.sender.first_name}} {{reply.sender.last_name}} to {{reply.receiver.first_name}} {{reply.receiver.last_name}} </br>
+                               {{reply.reply_body|safe}}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <form method="POST" action="{% url 'delete_reply' reply.pk %}">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
+
+
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+
+
+                  </div>
+                </div>
+
+                <!-- Modals -->
+                        <div class="modal fade" id="messageModal-{{message.pk}}" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="messageModalLabel">Send reply to {{receiver.first_name}} {{receiver.last_name}} </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="{% url 'reply_message' message.pk %}">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                               {{replyform}}
+                               
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                            </form>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
+
+                        <div class="modal fade" id="deleteModal-{{message.pk}}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="deleteModalLabel">Do you really want to delete this item? </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <div class="modal-body">
+                               From: {{message.sender.first_name}} {{message.sender.last_name}} to {{message.receiver.first_name}} {{message.receiver.last_name}} </br>
+                               {{message.body|safe}}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <form method="POST" action="{% url 'delete_message' message.pk %}">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                            </div>
+                        </div>
+                       
+                        </div>                
+                {% endfor %}  
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>  
+    </div> 
+
+   <div class="container my-1 py-1 w-50 ">
+   {% if messages.has_other_pages %}
+                          <nav aria-label="Page navigation example">
+                              <ul class="pagination pagination-sm mt-6 ms-8">
+                                  {% if messages.has_previous %}
+                                  <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{messages.previous_page_number}}">Previous</a></li>
+                                  {% endif%}
+                                  {% for page  in messages.paginator.page_range %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                  {% endfor %}
+                                  {% if messages.has_next %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{messages.next_page_number}}">Next</a></li>
+                                  {% endif %}
+                              </ul>
+                          </nav>
+                      {% endif %}
+   </div>
+
+
+  </div>
+  
+</section>
+</div>
+
+{% block scripts %}
+<script>
+$('.replies').click(function(e){
+  e.preventDefault();
+  $(this).next(".got_replies").fadeToggle(); 
+})
+$(".got_replies").fadeToggle();
+</script>
+{% endblock scripts %}
+
+{% endblock content %}

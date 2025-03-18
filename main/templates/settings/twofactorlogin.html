@@ -1,0 +1,33 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+
+<body>
+    <div id="login">
+        <h3 class="text-center text-white pt-5">Login form</h3>
+        <div class="container">
+            <div id="login-row" class="row justify-content-center align-items-center">
+                <div id="login-column" class="col-md-6">
+                    <div id="login-box" class="col-md-12">
+                        <form id="login-form" class="form" action="{% url 'twofactor_login' uidb64 %}" method="POST">
+                          {% csrf_token %}
+                            <h3 class="text-center text-info">Enter 2FA login code</h3>
+                            {{form.as_table}}
+
+                            <div class="form-group">
+                                <input type="submit" name="submit" class="btn btn-info btn-sm my-2" value="submit">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</div>
+</div>
+
+{% endblock content %}

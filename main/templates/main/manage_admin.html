@@ -1,0 +1,87 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<h3 class="mt-4 py-5">Current site admins </h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">name</th>
+      <th scope="col">settings
+    </tr>
+  </thead>
+  <tbody class="table-group-divider table-divider-color">
+    {% for admin in admins%}
+    <tr>
+ 
+      <td><a href="{% url 'admin_profile' admin.pk %}"><img class="avatar avatar-lg ms-5 mt-2 border border-4 border-dark" src="{{admin.adminprofile.imageURL}}" data-toggle="tooltip" data-bs-placement="bottom" title="{{admin.first_name}} {{admin.last_name}}" /></a></td>  
+      <td>
+      {% if admin != request.user %}
+        {% if admin.is_active%}
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#activateModal-{{admin.pk}}">
+          <i class="fa-solid fa-ban" aria-hidden="true"></i> Suspend
+        </button>
+        {% else %}
+        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#activateModal-{{admin.pk}}">
+        <i class="fa-solid fa-square-check"></i> Activate
+        </button>
+        {% endif %}
+
+    {% endif  %}
+      </td>  
+    </tr>
+
+                <!-- Modal -->
+                <div class="modal fade" id="activateModal-{{admin.pk}}" tabindex="-1" aria-labelledby="activateModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="activateModal-{{admin.pk}}">Do you want to {% if admin.is_active %}suspend{% else%}activate{% endif %} this admin ?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                      <img class="avatar avatar-lg ms-5 mt-2 border border-4 border-dark" src="{{admin.adminprofile.imageURL}}" /> {{admin.first_name}} {{admin.last_name}}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Back</button>
+                        <form method="POST" action="{% url 'manage_user' admin.pk %}">
+                        {% csrf_token %}
+                        {% if admin.is_active %}
+                        <button type="submit" class="btn btn-danger btn-sm">Suspend</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-success btn-sm">Activate</button>
+                        {% endif %}
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+<form class="form-horizontal" enctype="multipart/form-data" method="POST">
+
+{% csrf_token %}
+
+<h3 class="mt-4 py-5">Add new admin</h3>
+
+  <hr>
+  {{form.as_table}}
+  {{form.media}}
+ 
+  <div class="control-group my-2">
+      <!-- Button -->
+      <div class="controls">
+        <button class="btn btn-success btn-sm">update</button>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard'%}">Go Back</a>
+        
+      </div>
+    </div>
+</form>
+</div>
+</div>
+{% endblock content %}

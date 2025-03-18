@@ -1,0 +1,118 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<div class="container">
+  <section class="mx-auto my-5" style="max-width: 50rem;">
+      
+    <div class="card shadow-custom">
+      <div class="bg-image hover-overlay ripple">
+        <img src="{{hospital.imageURL}}" class="img-fluid w-100" />
+        <a href="#!">
+          <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+        </a>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title font-weight-bold"><a><i class="fa-solid fa-hospital "></i> {{hospital.name}}</a></h5>
+        
+        <p class="mb-2"><i class="fa-solid fa-city "></i><i> {{hospital.city}}</i></br>
+                        <i class="fa-solid fa-address-book"></i><i> {{hospital.address}}</i></br>
+                        <i class="fa-solid fa-phone"></i><i> {{hospital.phone}}</i></p>
+
+        <hr class="border-2 border-secondary">                
+
+        <p class="card-text">
+          {{hospital.description|safe}}
+        </p>
+        <hr class="my-4" />
+        <!--star ratio system-->
+
+            {% if request.user.patientprofile %}
+                {% if not ratio %}
+                    
+                    <form method="POST" action = {% url 'hospital_rating' hospital.pk%}>
+                        {% csrf_token %}
+                        <div class="h-100 d-flex align-items-center justify-content-center flex-row-reverse py-3 my-3">
+                            <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+                            <label class="star star-5" for="star-5"></label>
+                            <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+                            <label class="star star-4" for="star-4"></label>
+                            <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+                            <label class="star star-3" for="star-3"></label>
+                            <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+                            <label class="star star-2" for="star-2"></label>
+                            <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+                            <label class="star star-1" for="star-1"></label>
+                            <button class="btn btn-primary btn-sm mx-3" type="submit">ok</button>
+                        </div>                      
+                    </form>
+                {% else %}
+
+                <div class="my-4 py-4 d-flex justify-content-center small {% if hospital.averagerate < 3 %} text-danger {% elif hospital.averagerate < 4 %}text-warning {% elif hospital.averagerate < 5 %} 
+                    text-info {% else %} text-success  {% endif %} mb-2">
+                     <span>
+                        <i class="{% if hospital.averagerate < 0.5%}fa-regular fa-star{% elif hospital.averagerate >= 0.5 and hospital.averagerate < 1 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 1.5%}fa-regular fa-star{% elif hospital.averagerate >= 1.5 and hospital.averagerate < 2 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 2.5%}fa-regular fa-star{% elif hospital.averagerate >= 2.5 and hospital.averagerate < 3 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 3.5%}fa-regular fa-star{% elif hospital.averagerate >= 3.5 and hospital.averagerate < 4 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 4.5%}fa-regular fa-star{% elif hospital.averagerate >= 4.5 and hospital.averagerate < 5 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <small>({{hospital.countrate}})</small>
+                    </span>
+                </div>
+              {% endif %}
+
+            {% else %}
+              {% if hospital.averagerate %}
+                
+                <div class="my-4 d-flex justify-content-center small {% if hospital.averagerate < 3 %} text-danger {% elif hospital.averagerate < 4 %}text-warning {% elif hospital.averagerate < 5 %} 
+                    text-info {% else %} text-success  {% endif %} mb-2">
+                    <span>
+                        <i class="{% if hospital.averagerate < 0.5%}fa-regular fa-star{% elif hospital.averagerate >= 0.5 and hospital.averagerate < 1 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 1.5%}fa-regular fa-star{% elif hospital.averagerate >= 1.5 and hospital.averagerate < 2 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 2.5%}fa-regular fa-star{% elif hospital.averagerate >= 2.5 and hospital.averagerate < 3 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 3.5%}fa-regular fa-star{% elif hospital.averagerate >= 3.5 and hospital.averagerate < 4 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <i class="{% if hospital.averagerate < 4.5%}fa-regular fa-star{% elif hospital.averagerate >= 4.5 and hospital.averagerate < 5 %}fa-solid fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                        <small>({{hospital.countrate}})</small>
+                    </span>
+                </div>
+
+              {% else %}
+              <div class="my-4 d-flex justify-content-center small">
+                <small><i> Not rated </i><a href="">({{hospital.countrate}})</a></small>
+              </div>
+              {% endif %}
+         
+            {% endif %}
+
+            <!--star ration system-->
+
+
+
+
+
+        <p class="lead"><strong><i class="fa-solid fa-user-doctor"></i> Doctor's:</strong></p>
+
+            <div class="avatar-stack justify-content-start flex-row py-4">
+              
+
+                {% for doctor in hospital.doctorprofile_set.all %}
+                <a href="{% url 'show_doctor_profile' doctor.pk %}"><img class="avatar" src="{{doctor.imageURL}}" /></a>
+                {% endfor  %}
+            </div>
+        
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm mb-0">Go back</a>
+      </div>
+    </div>
+    
+  </section>
+</div>
+
+
+
+
+
+</div>
+</div>
+{% endblock content %}

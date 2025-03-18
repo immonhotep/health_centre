@@ -1,0 +1,32 @@
+{% extends 'main/base.html'%}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <div class="container my-5 py-5 w-50">
+        <div class="card shadow-custom">
+            <h5 class="text-center py-2">Modify message</h5>
+            <div class="h-100 d-flex align-items-center justify-content-center">
+
+               
+            </div>
+            <div class="card-body">
+                <form class="form-horizontal" enctype="multipart/form-data" method="POST">
+                {% csrf_token %}
+                
+                {{form.as_table}}
+                {{form.media}}
+
+                <div class="control-group py-2">
+                    <!-- Button -->
+                    <div class="controls">
+                        <button type="submit" class="btn btn-success btn-sm">Send</button>
+                       <a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Go Back</a>
+                    </div>
+                </div>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content%}

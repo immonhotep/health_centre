@@ -1,0 +1,104 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<h3 class="mt-4 py-5"><i class="fa-solid fa-magnifying-glass fa-lg"></i> Search Results ({{count}}) </h3>
+{% for item in search_repo %}
+
+    {% if item.city %}
+
+        <table class="table shadow-custom">
+            <thead>
+                <tr>
+                <th scope="col"></th>
+                <th scope="col">Name</th>
+                <th scope="col">City</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+           
+                <tr>
+                <th scope="row">
+                    <a href="{% url 'hospital_detail' item.pk %}"><img  class="ms-5 mt-2 border border-4 border-dark" src="{{item.imageURL}}" style="height:150px;width:200px;"/></a>
+                </th>
+                <td>{{item.name}} </td>
+                <td>{{item.city}}</td>
+                <td>{{item.phone}}</td>
+                <td data-toggle="tooltip" data-placement="bottom" title="{{item.description}}">{{item.description|truncatechars:100|safe}}</td>
+                </tr>
+              
+            </tbody>
+        </table>
+
+
+
+    {% else %}
+
+    <table class="table shadow-custom">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Name</th>
+      <th scope="col">Expertise</th>
+      <th scope="col">Hospital</th>
+    </tr>
+  </thead>
+  <tbody>
+ 
+    <tr>
+      <th scope="row">
+        <a href="{% url 'show_doctor_profile' item.pk %}"><img  class="avatar avatar-xl ms-5 mt-2 border border-4 border-dark" src="{{item.imageURL}}" /></a>
+      </th>
+      <td>Dr. {{item.user.first_name}} {{item.user.last_name}} </td>
+      <td>
+      {% for expertise in item.expertise.all %}
+      {{expertise}},
+      {% endfor %}
+      </td>
+      <td>
+      {{item.hospital}}
+      </br><small>({{item.hospital.city}} {{item.hospital.address}})</small>
+      </td>
+    </tr>
+   
+  </tbody>
+</table>
+{% endif %}
+{% endfor %}
+
+            <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-sm py-3">
+                  {% if search_repo.has_previous %}
+                  <li class="page-item"><a class="page-link text-white mx-1 my-2" style="background-color:#4c1104;" href="?page={{search_repo.previous_page_number }}{% if request.GET.search%}&search={{request.GET.search}}{% endif %}">Previous</a></li>
+                  {% endif%}
+
+                  {% for num  in search_repo.paginator.page_range %}
+                  {% if search_repo.number == num %}
+                  <li class="page-item"><a class="page-link text-white  mx-1 my-2" style="background-color:#4c1104;"  href="">{{num}}</a></li>
+                  {% else %}
+                  <li class="page-item"><a class="page-link  text-white mx-1 my-2" style="background-color:#4c1104;" href="?page={{ num }}{% if request.GET.search%}&search={{request.GET.search}}{% endif %}">{{num}}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                  {% if search_repo.has_next %}
+                  <li class="page-item"><a class="page-link  text-white mx-1 my-2" style="background-color:#4c1104;" href="?page={{search_repo.next_page_number }}{% if request.GET.search%}&search={{request.GET.search}}{% endif %}">Next</a></li>
+                  {% endif %}
+          
+                </ul>
+          </nav>
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+{% endblock content %}

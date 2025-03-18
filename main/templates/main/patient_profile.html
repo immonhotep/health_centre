@@ -1,0 +1,148 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+
+<div id="layoutSidenav_content">
+    <div class="container-fluid px-4 py-1">
+
+
+<section style="background-color: #eee;">
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4 border-2 border-primary">
+          <div class="card-body text-center">
+            <img  src="{{profile.imageURL}}"
+              class="rounded-circle" style="width: 150px;height: 150px;">
+            <h5 class="my-3">{{profile.user.first_name}} {{profile.user.last_name}}</h5>
+            {% if request.user.doctorprofile %}
+            <a href="{% url 'patient_information' profile.pk %}" class="btn btn-primary btn-sm">Update patient information </a>
+            {% endif %}
+            <a href="{% url 'send_message' profile.user.pk %}" class="btn btn-primary btn-sm">Message </a>
+     
+          </div>
+        </div>
+        {% if request.user.doctorprofile %}
+        <div class="card mb-4 mb-lg-0 border-2 border-primary">
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush rounded-3">
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                Gender:
+                <p class="mb-0">{% if profile.gender == "M"%} Male {% else %} Female {% endif %}</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                Age:
+                <p class="mb-0">{{profile.age}}</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                Height:
+                <p class="mb-0">{{profile.patienthealtinformation.height}}</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                Weight:
+                <p class="mb-0">{{profile.patienthealtinformation.weight}}</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                Blood type:
+                <p class="mb-0">{{profile.patienthealtinformation.blood_type}}</p>
+              </li>
+             
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-8">
+        <div class="card mb-4 border-2 border-primary">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Full Name</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"> {{profile.user.first_name}} {{profile.user.last_name}} </p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Email</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{profile.user.email}}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Phone</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{profile.phone}}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">City</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{profile.city}}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Address</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{profile.address}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% if request.user.doctorprofile %}
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-4 mb-md-0 border-2 border-primary">
+              <div class="card-body">
+                <p class="mb-4"><span class="text-primary font-italic me-1">Medicines:</span>
+                </p>
+                <p class="mb-1" style="font-size: .77rem;">{{profile.patienthealtinformation.medicines|safe}}</p>
+                 <p class="mb-4"><span class="text-primary font-italic me-1">Surgeries:</span>
+                </p>
+                <p class="mb-1" style="font-size: .77rem;">{{profile.patienthealtinformation.surgeries|safe}}</p>
+          
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card mb-4 mb-md-0 border-2 border-primary">
+              <div class="card-body">
+                <p class="mb-4"><span class="text-primary font-italic me-1">Known sicknesses:</span>
+                </p>
+                <p class="mb-1" style="font-size: .77rem;">{{profile.patienthealtinformation.known_sickness|safe}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+    <div class="control-group my-2 ms-4">
+      <!-- Button -->
+      <div class="controls">
+        <a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Go Back</a> 
+      </div>
+    </div>
+
+    </div>
+</div>
+
+
+
+{% endblock content %}

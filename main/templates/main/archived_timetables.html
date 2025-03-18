@@ -1,0 +1,72 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<h3 class="mt-4 py-5"><i class="fa-regular fa-clock fa-lg"></i> Archived timeslots ({{count}})</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Applicant</th>
+      <th scope="col">Date</th>
+      <th scope="col">hours</th>
+      <th scope="col">settings</th>
+      
+    </tr>
+  </thead>
+  <tbody class="table-group-divider table-divider-color">
+    {% for table in timetables%}
+    <tr>
+      <td>
+      {% for applicant in table.appointment_set.all %}
+      <a href="{% url 'patient_profile'  applicant.patient.pk %}">
+      <img data-toggle="tooltip" title="{{applicant.patient.user.first_name}} {{applicant.patient.user.last_name}}"  class="avatar avatar-2lg ms-5 mt-2 border border-4 border-dark" src="{{applicant.patient.imageURL}}" />
+      </a>
+      {% endfor %}
+      </td>
+      <td>{{table.date}}</td>
+      <td>{{table.start_time}}-{{table.end_time}}</td>
+      <td>
+      <button class="btn btn-outline-info btn-sm" 
+      data-toggle="tooltip" data-bs-html="true" title="{% for info in table.timetablelog_set.all %}<p>{{info.entry}} ({{info.date}})</p> {% endfor %}" > 
+      View log</button>
+      </td>
+
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+                    {% if timetables.has_other_pages %}
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination pagination-sm mt-6 ms-8">
+                                {% if timetables.has_previous %}
+                                <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{timetables.previous_page_number}}">Previous</a></li>
+                                {% endif%}
+                                {% for page  in timetables.paginator.page_range %}
+                                <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                {% endfor %}
+                                {% if timetables.has_next %}
+                                <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{timetables.next_page_number}}">Next</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+
+    <div class="control-group my-2 ms-1">
+      <!-- Button -->
+      <div class="controls">
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard'%}">Go Back</a> 
+      </div>
+    </div>
+
+
+
+</div>
+</div>
+
+
+
+{% endblock content %}

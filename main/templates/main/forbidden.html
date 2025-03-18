@@ -1,0 +1,26 @@
+ {% extends "main/base.html" %}
+
+
+{% block content %}
+
+<title>Sorry, This Page Can&#39;t Be Accessed</title>
+
+<body class="bg-dark text-white py-5">
+     <div class="container py-5">
+          <div class="row">
+               <div class="col-md-2 text-center">
+                    <p><i class="fa fa-exclamation-triangle fa-5x"></i><br/>Status Code: 403</p>
+               </div>
+               <div class="col-md-10">
+                    <h3>Access Denied</h3>
+                    <p>You have no permission to view this page<br/>Please go back to the previous page to continue browsing.</p>
+                    <a class="btn btn-danger" href="javascript:history.back()">Go Back</a>
+               </div>
+          </div>
+     </div>
+</body>
+
+{% endblock content %}
+
+
+

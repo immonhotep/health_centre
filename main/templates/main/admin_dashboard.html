@@ -1,0 +1,322 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+ <div id="layoutSidenav_content">   
+                <main>
+                    <div class="container-fluid px-4">
+                        <div class="row">
+                            <div class="col-1 ms-1">
+                                <img src="{{request.user.adminprofile.imageURL}}" width="100" height="100" class="rounded-circle">
+                            </div>
+                            <div class="col-4 ms-4">
+                                <h3 class="mt-4 py-5">Admin: {{request.user.first_name}} {{request.user.last_name}} Dashboard</h3>   
+                            </div>
+
+                        </div>
+                         
+                        <div class="row">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-primary text-white mb-4">
+                                    <div class="card-body">Add update expertises</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="{% url 'expertise' %}">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+
+
+                                
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card  text-white mb-4" style="background-color:#4fa5e5;">
+                                    <div class="card-body">Registered doctors ({{doctors.count}})</div>
+                                    {% for doctor in doctors|slice:4 %}
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <img src="{{doctor.imageURL}}" class="avatar avatar-md ms-5 mt-2 border border-4 border-dark"/> 
+                                        </div>
+                                        <div class="col-5 ms-5 mt-2" >
+                                            <small class="ms-3 mb-1">{{doctor.user.first_name}} {{doctor.user.last_name}}</small>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="card-footer d-flex align-items-center justify-content-between mt-2">
+                                        <a class="small text-white stretched-link" href="{% url 'list_doctors' %}">Show all</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-success text-white mb-4">
+                                    <div class="card-body">Registered patients ({{patients.count}})</div>
+                                    {% for patient in patients|slice:4 %}
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <img src="{{patient.imageURL}}" class="avatar avatar-md ms-5 mt-2 border border-4 border-dark"/> 
+                                        </div>
+                                        <div class="col-5 ms-5 mt-2" >
+                                            <small class="ms-3 mb-1">{{patient.user.first_name}} {{patient.user.last_name}}</small>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="card-footer d-flex align-items-center justify-content-between mt-1">
+                                        <a class="small text-white stretched-link" href="{% url 'list_patients' %}">Show all</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-danger text-white mb-4">
+                                    <div class="card-body">Manage Admins</div>
+                                    {% for admin in admins|slice:4 %}
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <img src="{{admin.adminprofile.imageURL}}" class="avatar avatar-md ms-5 mt-2 border border-4 border-dark"/> 
+                                        </div>
+                                        <div class="col-5 ms-5 mt-2" >
+                                            <small class="ms-3 mb-1">{{admin.first_name}} {{admin.last_name}}</small>
+                                        </div>
+                                    </div>
+
+                                    {% endfor %}
+                                    <div class="card-footer d-flex align-items-center justify-content-between mt-1">
+                                        <a class="small text-white stretched-link" href="{% url 'manage_admin' %}">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+                                        Users login count
+                                    </div>
+                                    <div class="card-body"><canvas id="login_chart" data-url="{% url 'login_chart' %}" width="100%" height="40"></canvas></div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-bar me-1"></i>
+                                        Users Joined this year
+                                    </div>
+                                    <div class="card-body"><canvas id="user_chart" data-url="{% url 'user_chart' %}" width="100%" height="40"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Users table
+                            </div>
+                            <div class="card-body">
+                        <table class="table align-middle mb-0 bg-white">
+                            <thead class="bg-light">
+                                <tr>
+                            
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Type</th>
+                                 <th><b>Last login</b> 
+                                    {% if L == "dsc" or L == "asc" %}
+                                     <a href="{% url 'dashboard' %}?login={{L}}"><i class="fa fa-fw fa-sort"></i></a>
+                                     {% else %}
+                                     <a href="{% url 'dashboard' %}?login=asc"><i class="fa fa-fw fa-sort"></i></a>
+                                    {% endif %}
+                                 </th>                         
+                                <th>
+                                    <b>Date Joined</b> 
+                                    {% if J == "dsc" or J == "asc" %}
+                                     <a href="{% url 'dashboard' %}?join={{J}}"><i class="fa fa-fw fa-sort"></i></a>
+                                     {% else %}
+                                     <a href="{% url 'dashboard' %}?join=asc"><i class="fa fa-fw fa-sort"></i></a>
+                                    {% endif %}
+
+                                
+                                </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in users%}
+                                <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                    <a 
+                                    
+                                    
+                                    href="
+                                        {% if user.type == "D" %}
+                                        {% url 'show_doctor_profile' user.doctorprofile.pk %}
+                                        {% elif user.type == "P" %}
+                                        {% url 'patient_profile' user.patientprofile.pk %}
+                                        {% else %}
+                                        {% url 'admin_profile' user.pk %}
+                                        {% endif %}
+                                    "
+                                     >
+
+                                    <img
+                                        src="
+                                        {% if user.type == "D" %}
+                                        {{user.doctorprofile.imageURL}}
+                                        {% elif user.type == "P" %}
+                                        {{user.patientprofile.imageURL}}
+                                        {% else %}
+                                        {{user.adminprofile.imageURL}}
+                                        {% endif %}
+                                        
+                                        
+                                        "
+                                        alt=""
+                                        style="width: 45px; height: 45px"
+                                        class="rounded-circle"
+                                        /></a>
+                                    <div class="ms-3">
+                                        <p class="fw-bold mb-1">{{user.first_name}} {{user.last_name}}</p>
+                                        <p class="text-muted mb-0">{{user.email}}</p>
+                                    </div>
+                                    </div>
+                                </td>
+                                <td>
+                                {% if user.is_active %}
+                                    <p class="fw-normal mb-1 text-success">Active </p>
+                                {% else  %}
+                                    <p class="fw-normal mb-1 text-danger">Inactive </p>
+                                {% endif %}
+                                </td>
+                                <td>{{user.type}}</td>
+                                <td>{{user.last_login}}</td>
+                                <td>
+                                    <p class="fw-normal mb-1">{{user.date_joined}} </p>
+                                </td>
+                                </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                            </table>
+                            
+                        {% if users.has_other_pages %}
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination pagination-sm py-2">
+                            {% if users.has_previous %}
+                            <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{users.previous_page_number }}{% if request.GET.login %}&login={{ request.GET.login }}{% endif %}{% if request.GET.join %}&join={{request.GET.join}}{% endif %}">Previous</a></li>
+                            {% endif%}
+                            {% for num  in users.paginator.page_range %}
+                            {% if users.number == num %}
+                            <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="">{{num}}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{ num }}{% if request.GET.login %}&login={{ request.GET.login }}{% endif %}{% if request.GET.join %}&join={{request.GET.join}}{% endif %}">{{num}}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if users.has_next %}
+                            <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{users.next_page_number }}{% if request.GET.login %}&login={{ request.GET.login }}{% endif %}{% if request.GET.join %}&join={{request.GET.join}}{% endif %}">Next</a></li>
+                            {% endif %}
+                            </ul>
+                    </nav>
+                    {% endif %}
+
+                                    
+
+
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-5 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted ms-5">Copyright &copy; Health centre 2025</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div> 
+
+<script>
+$(function () {
+
+      var $user_chart = $("#user_chart");
+      $.ajax({
+        url: $user_chart.data("url"),
+        success: function (data) {
+
+          var ctx = $user_chart[0].getContext("2d");
+         
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Amount',
+                backgroundColor: [
+                      '#1e3de7', '#030d45','#15eba1','#068c5e','#033121','#f58d76','#e1340e','#6e1805','#f3f98b','#a4ad0d','#474b04','#68bae6'
+                      ],
+                data: data.data
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Users/joined current year'
+              }
+            }
+          });
+
+        }
+      });
+
+    });
+
+
+
+$(function () {
+
+      var $login_chart = $("#login_chart");
+      $.ajax({
+        url: $login_chart.data("url"),
+        success: function (data) {
+
+          var ctx = $login_chart[0].getContext("2d");
+         
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Count',
+                backgroundColor: '#2490df',
+                data: data.data
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Login/Users'
+              }
+            }
+          });
+
+        }
+      });
+    });
+
+</script>
+
+
+
+{% endblock content %}

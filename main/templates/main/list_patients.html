@@ -1,0 +1,106 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<h3 class="mt-4 py-5"><i class="fa-solid fa-bed fa-lg"></i> Patients ({{count}})</h3>
+
+<table class="table shadow-custom">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Name</th>
+      <th scope="col">Phone</th>
+      <th scope="col">Address</th>
+      <th scope="col">Email</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for patient in patients%}
+    <tr>
+      <th scope="row">
+        <a href="{% url 'patient_profile' patient.pk %}"><img  class="avatar avatar-xl ms-5 mt-2 border border-4 border-dark" src="{{patient.imageURL}}" /></a>
+        {% if request.user.is_staff %}  
+          {% if not patient.user.is_active %}
+          <small class="text-danger ms-2"><i class="fa-solid fa-ban fa-lg"></i></small>
+          {% endif %}
+        {% endif %}
+      </th>
+      <td>{{patient.user.first_name}} {{patient.user.last_name}}</td>
+      <td>{{patient.phone}}</td>
+      <td>{{patient.city}} {{patient.address}}</td>
+      <td>{{patient.user.email}}</td>
+      {% if request.user.is_staff %}
+      <td>
+      {% if patient.user.is_active %}
+      <button data-bs-toggle="modal" data-bs-target="#suspendModal-{{patient.user.pk}}" type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-ban"></i> Suspend</button>
+      {% else %}
+      <button data-bs-toggle="modal" data-bs-target="#suspendModal-{{patient.user.pk}}" type="button" class="btn btn-success btn-sm"><i class="fa-solid fa-square-check"></i> Activate</button>
+      {% endif %}
+      </td>
+      {% endif %}
+    </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="suspendModal-{{patient.user.pk}}" tabindex="-1" aria-labelledby="suspendModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="suspendModalLabel">{% if patient.user.is_active %}Do you want to suspend this user?{% else %}Do you want to activate this user?{% endif %}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{patient.user.first_name}} {{patient.user.last_name}}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <form method="POST" action="{% url 'manage_user' patient.user.pk  %}">
+                {% csrf_token %}
+                {% if patient.user.is_active %}
+                <button type="submit" class="btn btn-danger btn-sm">suspend</button>
+                {% else %}
+                <button type="submit" class="btn btn-success btn-sm">activate</button>
+                {% endif %}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+  {% endfor %}
+  </tbody>
+</table>
+
+                        {% if patients.has_other_pages %}
+                          <nav aria-label="Page navigation example">
+                              <ul class="pagination pagination-sm mt-6 ms-8">
+                                  {% if patients.has_previous %}
+                                  <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{patients.previous_page_number}}">Previous</a></li>
+                                  {% endif%}
+                                  {% for page  in patients.paginator.page_range %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                  {% endfor %}
+                                  {% if patients.has_next %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{patients.next_page_number}}">Next</a></li>
+                                  {% endif %}
+                              </ul>
+                          </nav>
+                      {% endif %}
+
+    <div class="control-group my-2 ms-1">
+      <!-- Button -->
+      <div class="controls">
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard'%}">Go Back</a> 
+      </div>
+    </div>
+
+
+</div>
+</div>
+
+
+
+{% endblock content %}

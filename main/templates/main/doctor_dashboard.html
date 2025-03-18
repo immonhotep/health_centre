@@ -1,0 +1,263 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+ <div id="layoutSidenav_content">   
+                <main>
+                    <div class="container-fluid px-4"> 
+                        <div class="row">
+                            <div class="col-1 ms-1">
+                                <img src="{{request.user.doctorprofile.imageURL}}" width="100" height="100" class="rounded-circle">
+                            </div>
+                            <div class="col-4 ms-4">
+                                <h3 class="mt-4 py-5">Dr. {{request.user.first_name}} {{request.user.last_name}} Dashboard</h3>   
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-primary text-white mb-4" id="dashboard-card">
+                                    <div class="card-body"><b>Hospital Information</b></div>
+                                    <h6 class="ms-3 text-white"><small>{{request.user.doctorprofile.hospital.name}}</small></h6>
+                                    <h6 class="ms-3 text-white"><i class="fa-solid fa-city fa-xs"></i> <small>City: {{request.user.doctorprofile.hospital.city}}</small></h6>
+                                    <h6 class="ms-3 text-white"><i class="fa-solid fa-address-book fa-xs"></i> <small>Address: {{request.user.doctorprofile.hospital.address}}</small></h6>
+                                    <h6 class="ms-3 text-white"><i class="fa-solid fa-phone fa-xs"></i> <small>Phone: {{request.user.doctorprofile.hospital.phone}}</small></h6>
+
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="{% url 'hospital' %}">Add/update hospital</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card  text-white mb-4" id="dashboard-card"  style="background-color:#7a6f09;">
+                                    
+                                    <div class="card-body"><b>Timeslot information</b></div>
+                                    <small class="ms-3">Today free:</small>
+                                    <p>
+                                    {% for table in current_day_tables|slice:4%}
+                                    <h6 class="ms-3"><i class="fa-solid fa-clock fa-xs"></i> <small>{{table.start_time}} - {{table.end_time}}</small></h6>
+                                    {% endfor %}
+                                    </p>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="{% url 'timetable' %}">Add/update timeslots</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-success text-white mb-4" id="dashboard-card">
+                                    <div class="card-body">Archived timeslots</div>
+                                     <small class="ms-3">Count: {{count}}</small>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="{% url 'archived_tables' %}">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card text-white mb-4" id="dashboard-card" style="background-color:#751703;">
+                                    <div class="card-body">List registered patients</div>
+                                    {% for patient in all_patients|slice:4 %}
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <img src="{{patient.imageURL}}" class="avatar avatar-md ms-5 mt-2 border border-4 border-dark"/> 
+                                        </div>
+                                        <div class="col-5 ms-5 mt-2" >
+                                            <small class="ms-3 mb-1">{{patient.user.first_name}} {{patient.user.last_name}}</small>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                   
+
+
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="{% url 'list_patients' %}">See more</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                                        Statistic Chart
+                                    </div>
+                                    <div class="card-body"><canvas id="statistic_chart" data-url="{% url 'statistic_chart' %}" width="100%" height="40"></canvas></div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                                        Occupied/Free time slot chart
+                                    </div>
+                                    
+                                    <div class="card-body"><canvas id="timetable_chart" data-url="{% url 'timetable_chart' %}" width="100%" height="40"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                               Dr. {{request.user.first_name}} {{request.user.last_name}}  patients
+                            </div>
+                            <div class="card-body">
+                        <table class="table align-middle mb-0 bg-white">
+                            <thead class="bg-light">
+                                <tr>
+                                <th>Name</th>
+                                <th>City</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <td>Email</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for patient in patients %}
+                                <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                    <a href="{% url 'patient_profile' patient.pk %}"><img
+                                        src="{{patient.imageURL}}"
+                                        alt=""
+                                        style="width: 45px; height: 45px"
+                                        class="rounded-circle"
+                                        /></a>
+                                    <div class="ms-3">
+                                        <p class="fw-bold mb-1">{{patient.user.first_name}} {{patient.user.last_name}}</p>
+                                    </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="fw-normal mb-1">{{patient.city}}</p>
+                                </td>
+                                <td>{{patient.address}}</td>
+                                <td>{{patient.phone}}</td>
+                                <td>{{patient.user.email}}</td>  
+                                </tr>
+                            </tbody>
+                            {% endfor %}
+                            </table>
+                                {% if patients.has_other_pages %}
+                                        <nav aria-label="Page navigation example">
+                                            <ul class="pagination pagination-sm mt-6 ms-8">
+                                                {% if patients.has_previous %}
+                                                <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{patients.previous_page_number}}">Previous</a></li>
+                                                {% endif%}
+                                                {% for page  in patients.paginator.page_range %}
+                                                <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                                {% endfor %}
+                                                {% if patients.has_next %}
+                                                <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{patients.next_page_number}}">Next</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </nav>
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-5 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted ms-5">Copyright &copy; Health centre 2025</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div> 
+
+
+{% block scripts%}
+<script>
+ $(function () {
+
+      var $timetable_chart = $("#timetable_chart");
+      $.ajax({
+        url: $timetable_chart.data("url"),
+        success: function (data) {
+
+          var ctx = $timetable_chart[0].getContext("2d");
+         
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Amount',
+                backgroundColor: [
+                      '#0d941d', '#0f18d6',
+                      ],
+                data: data.data
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Active time slot chart'
+              }
+            }
+          });
+
+        }
+      });
+
+    });
+
+
+
+$(function () {
+
+      var $statistic_chart = $("#statistic_chart");
+      $.ajax({
+        url: $statistic_chart.data("url"),
+        success: function (data) {
+
+          var ctx = $statistic_chart[0].getContext("2d");
+         
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Amount',
+                backgroundColor: [
+                      '#1e3de7', '#030d45','#15eba1','#068c5e','#033121','#f58d76','#e1340e','#6e1805','#f3f98b','#a4ad0d','#474b04','#68bae6'
+                      ],
+                data: data.data
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Appointments/month current year'
+              }
+            }
+          });
+
+        }
+      });
+
+    });
+
+
+</script>
+
+{% endblock scripts%}
+
+{% endblock content %}

@@ -1,0 +1,62 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <div class="container-fluid px-4 py-1">
+    <h3 class="mt-4 py-5"><i class="fa fa-sticky-note" aria-hidden="true"></i>Notifications ({{notes.count}})</h3>
+
+        {% if notes%}
+        <div class="card border-2 border-primary py-2 my-2">
+        <form class="py-2 ms-3" id="allnoteform" method="POST" action="{% url 'set_notes_readed' %}">
+            {% csrf_token %}
+            <div class="form-check">
+                <input class="form-check-input" name="note_all" type="checkbox" class="checkbox" value="True">
+                <label class="form-check-label" for="flexCheckChecked">
+                    Set all note to readed
+                </label>
+            </div> 
+
+        </form>
+        </div>
+        {% endif %}
+
+        <div class="card border-2 border-secondary">           
+            <form action="{% url 'set_notes_readed' %}" id="noteform" method="POST">
+            {% csrf_token %}
+            <ul class="list-group">
+            {% for note in notes %}
+                <li class="list-group-item">
+                    <label><small>{{note.date}}</small> {{note.note|safe}} {% if note.type == "M" %} See conversation: <i><a href="{{note.link}}"> here</a></i> {% endif %}</label> 
+                    <div class="form-check">
+                        <input class="form-check-input" name="note_id" type="checkbox" class="checkbox" value="{{note.pk}}">
+                        <label class="form-check-label" for="flexCheckChecked">
+                            Set to readed
+                        </label>
+                    </div>                   
+                </li>
+            {% endfor %}                       
+            </ul>
+            </form>          
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    $("#noteform").on("change", "input:checkbox", function(){
+        $("#noteform").submit();
+    });
+});
+
+$(document).ready(function(){
+    $("#allnoteform").on("change", "input:checkbox", function(){
+        $("#allnoteform").submit();
+    });
+});
+
+</script>
+
+
+
+
+{% endblock content %}

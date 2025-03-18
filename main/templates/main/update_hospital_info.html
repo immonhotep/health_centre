@@ -1,0 +1,48 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+<div class="card shadow-custom">
+  <div class="card-body">
+    <form class="form-horizontal" enctype="multipart/form-data" method="POST">
+
+    {% csrf_token %}
+
+    <h1 class="mt-4 py-5">Add/update hospital information</h1>
+      
+        <div class="card shadow-custom mb-4"  style="background-color:#d5cac8;">
+            <img  class="ms-5 mt-2 border border-4 border-dark" src="{{form.instance.imageURL}}" style="height:200px;width:250px;" />
+            <div class="py-2">
+                <h1>{% if form.instance.name %}{{form.instance.name}}{% endif %}</h1>        
+            </div>
+        </div>
+      <hr>
+      <div class="card shadow-custom py-2 my-2">
+        <div class="card-body">
+          {{form.as_table}}
+          {{form.media}}
+        </div>
+      </div>
+
+      <div class="control-group my-2">
+          <!-- Button -->
+          <div class="controls">
+            <button class="btn btn-success btn-sm">update</button>
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard' %}">Go Back</a>
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+
+{% endblock content %}
+
+
+

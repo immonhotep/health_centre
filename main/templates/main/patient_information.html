@@ -1,0 +1,30 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+    <div class="container-fluid px-4 py-1">
+
+      <div class="card shadow-custom">
+        <div class="card-body">
+          <h1 class="mt-4 py-5">Update {{patient.user.first_name}} {{patient.user.last_name}} health information</h1>
+          <form class="form-horizontal" enctype="multipart/form-data" method="POST">
+          {% csrf_token %}
+        
+          {{form}}
+          {{form.media}}
+          <div class="control-group py-2 ">
+            <!-- Button -->
+            <div class="controls">
+              <button class="btn btn-success btn-sm">update</button>
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'patient_profile' patient.pk %}">Go Back</a>
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+
+
+    </div>
+</div>
+{% endblock content%}

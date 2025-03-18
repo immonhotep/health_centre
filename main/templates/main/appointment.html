@@ -1,0 +1,83 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+    <div class="container-fluid px-4 py-1">
+    
+
+    
+    <h3 class="mt-4 py-5"><i class="fa-solid fa-handshake fa-lg"></i> Free appointment date ({{count}})</h3>
+    
+    <div class="row text-center">
+        <a href=""><img  class="avatar avatar-xl ms-5 mt-2 border border-4 border-dark text-center" src="{{doctor.imageURL}}" /></a>
+        <small class="ms-4">{{doctor.user.first_name}} {{doctor.user.last_name}}</small>
+    </div>
+    <table class="table border-2 border-primary">
+  <thead>
+    <tr>
+      
+      <th scope="col">Date</th>
+      <th scope="col">Time</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for table in  timetables%}
+    <tr>
+      
+      <td>{{table.date}}</td>
+      <td>{{table.start_time}} -- {{table.end_time}}</td>
+      <td><button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#bookModal-{{table.pk}}" >book</button></td>
+    </tr>
+
+            <!-- Modal -->
+            <div class="modal fade" id="bookModal-{{table.pk}}" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="bookModalLabel">Do you want to book this time slot</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{table.date}} {{table.start_time}} -- {{table.end_time}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" action={% url 'appointment'  table.pk %}>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">Book</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+            </div>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+                    {% if timetables.has_other_pages %}
+                          <nav aria-label="Page navigation example">
+                              <ul class="pagination pagination-sm mt-6 ms-8">
+                                  {% if timetables.has_previous %}
+                                  <li class="page-item"><a class="page-link text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{timetables.previous_page_number}}">Previous</a></li>
+                                  {% endif%}
+                                  {% for page  in timetables.paginator.page_range %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{page}}">{{page}}</a></li>
+                                  {% endfor %}
+                                  {% if timetables.has_next %}
+                                  <li class="page-item"><a class="page-link  text-white me-1 my-3" style="background-color:#4c1104;" href="?page={{timetables.next_page_number}}">Next</a></li>
+                                  {% endif %}
+                              </ul>
+                          </nav>
+                      {% endif %}
+
+
+    </div>
+<div>
+
+
+
+
+{% endblock content %}

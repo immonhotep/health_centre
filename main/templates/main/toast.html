@@ -1,0 +1,20 @@
+{% if unread_notes %}
+<div class="toast-container top-0 start-50 translate-middle-x p-3">
+  <div class="toast show fade" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+      <div class="d-flex gap-4">
+        <span class="text-primary"><i class="fa-solid fa-circle-info fa-lg"></i></span>
+        <div class="d-flex flex-grow-1 align-items-center">
+          <a href="{% url 'read_notes' %}"><span class="fw-semibold">You have {{unread_notes.count}} unread notifications </span></a>
+          <button type="button" class="btn-close btn-close-sm btn-close-black ms-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+

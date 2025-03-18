@@ -1,0 +1,20 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+<div class="container-fluid px-4 py-1">
+
+<div class="clearfix">
+	
+	<a class="btn btn-info left" id="btn-calendar" href="{% url 'calendar' %}?{{prev_month}}"><i class="fa-solid fa-left-long"></i> Previous Month </a>
+	<a class="btn btn-info right" id="btn-calendar" href="{% url 'calendar' %}?{{next_month }}">Next Month <i class="fa-solid fa-right-long"></i></a>
+</div>
+
+{{ calendar }}
+
+</div>
+</div>
+
+{% endblock content %}
+
