@@ -929,9 +929,16 @@ class CancelPatientAppointment(PatientRequiredMixin,View):
 
     def post(self,request,pk):
 
+        date = datetime.now().date()
+        time = datetime.now().time()
+
         appointment = get_object_or_404(Appointment,pk=pk)
 
         if appointment.patient != request.user.patientprofile:
+            return redirect('forbidden')
+            
+        if appointment.timetable.date < date or (appointment.timetable.date == date and appointment.timetable.end_time < time ):
+            messages.info(request,'this appointment should already finished, and waiting for archive this way unable to cancel please consult your doctor about')
             return redirect('forbidden')
 
         timetable = appointment.timetable
